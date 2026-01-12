@@ -9,8 +9,7 @@ import 'package:frwin/providers/settings/settings_bloc.dart';
 import 'package:frwin/providers/settings/settings_state.dart';
 import 'package:frwin/widgets/error_display_widget.dart';
 import 'package:frwin/widgets/loading_widget.dart';
-import 'package:syncfusion_flutter_charts/charts.dart';
-import 'package:frwin/models/funding_rate_data.dart';
+import 'package:frwin/widgets/funding_rate_chart.dart';
 
 class FundingRateDetailScreen extends StatefulWidget {
   const FundingRateDetailScreen({super.key});
@@ -97,18 +96,7 @@ class _FundingRateDetailScreenState extends State<FundingRateDetailScreen> {
                   if (state is FundingRateError)
                     Text('Error: ${state.message}', style: const TextStyle(color: Colors.red)),
                   Expanded(
-                    child: SfCartesianChart(
-                      primaryXAxis: const DateTimeAxis(),
-                      series: <LineSeries<FundingRateData, DateTime>>[
-                        LineSeries<FundingRateData, DateTime>(
-                          dataSource: state.fundingRates,
-                          xValueMapper: (FundingRateData rate, _) =>
-                              rate.timestamp,
-                          yValueMapper: (FundingRateData rate, _) =>
-                              rate.fundingRate,
-                        )
-                      ],
-                    ),
+                    child: FundingRateChart(fundingRateHistory: state.fundingRates),
                   ),
                 ],
               ),
