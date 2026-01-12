@@ -14,11 +14,29 @@ class InstrumentLoading extends InstrumentState {}
 
 class InstrumentLoaded extends InstrumentState {
   final List<InstrumentInfo> instruments;
+  final String? nextCursor;
+  final bool hasMore;
 
-  const InstrumentLoaded({required this.instruments});
+  const InstrumentLoaded({
+    required this.instruments,
+    this.nextCursor,
+    this.hasMore = false,
+  });
+
+  InstrumentLoaded copyWith({
+    List<InstrumentInfo>? instruments,
+    String? nextCursor,
+    bool? hasMore,
+  }) {
+    return InstrumentLoaded(
+      instruments: instruments ?? this.instruments,
+      nextCursor: nextCursor ?? this.nextCursor,
+      hasMore: hasMore ?? this.hasMore,
+    );
+  }
 
   @override
-  List<Object> get props => [instruments];
+  List<Object> get props => [instruments, nextCursor ?? '', hasMore];
 }
 
 class InstrumentError extends InstrumentState {

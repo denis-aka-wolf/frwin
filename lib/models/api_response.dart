@@ -1,8 +1,9 @@
 class ApiResponse<T> {
-  final T? data;
+  final List<T> list;
+  final String? nextPageCursor;
   final String? error;
 
-  ApiResponse({this.data, this.error});
+  ApiResponse({required this.list, this.nextPageCursor, this.error});
 
   bool get hasError => error != null;
 }

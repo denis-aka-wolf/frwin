@@ -15,11 +15,32 @@ class MainScreen extends StatefulWidget {
 }
 
 class _MainScreenState extends State<MainScreen> {
+  final _scrollController = ScrollController();
+
   @override
   void initState() {
     super.initState();
-    // Fetch instruments when the screen is initialized
+    _scrollController.addListener(_onScroll);
     context.read<InstrumentBloc>().add(const FetchInstruments(category: 'linear'));
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  void _onScroll() {
+    if (_isBottom) {
+      context.read<InstrumentBloc>().add(const FetchMoreInstruments(category: 'linear'));
+    }
+  }
+
+  bool get _isBottom {
+    if (!_scrollController.hasClients) return false;
+    final maxScroll = _scrollController.position.maxScrollExtent;
+    final currentScroll = _scrollController.offset;
+    return currentScroll >= (maxScroll * 0.9);
   }
 
   @override
@@ -42,8 +63,14 @@ class _MainScreenState extends State<MainScreen> {
             return const LoadingWidget();
           } else if (state is InstrumentLoaded) {
             return ListView.builder(
-              itemCount: state.instruments.length,
+              controller: _scrollController,
+              itemCount: state.hasMore
+                  ? state.instruments.length + 1
+                  : state.instruments.length,
               itemBuilder: (context, index) {
+                if (index >= state.instruments.length) {
+                  return const LoadingWidget();
+                }
                 final instrument = state.instruments[index];
                 return InstrumentDataCard(instrument: instrument);
               },

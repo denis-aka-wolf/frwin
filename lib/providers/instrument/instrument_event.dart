@@ -15,3 +15,12 @@ class FetchInstruments extends InstrumentEvent {
   @override
   List<Object> get props => [category];
 }
+
+class FetchMoreInstruments extends InstrumentEvent {
+  final String category;
+
+  const FetchMoreInstruments({required this.category});
+
+  @override
+  List<Object> get props => [category];
+}

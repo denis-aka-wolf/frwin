@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:crypto/crypto.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:frwin/models/api_response.dart';
 import 'package:frwin/models/funding_rate_data.dart';
 import 'package:frwin/models/instrument_info.dart';
 import 'package:injectable/injectable.dart';
@@ -26,29 +27,34 @@ class BybitApiService {
     await _secureStorage.write(key: _apiSecretStore, value: apiSecret);
   }
 
-  Future<List<InstrumentInfo>> getInstrumentsInfo(String category) async {
+  Future<ApiResponse<InstrumentInfo>> getInstrumentsInfo(String category, {String? cursor}) async {
     final url = '$_baseUrl/v5/market/instruments-info';
-    _logger.i('Fetching instruments info from: $url with category: $category');
+    final params = {'category': category, 'cursor': cursor, 'limit': 100};
+    _logger.i('Fetching instruments info from: $url with params: $params');
     try {
       final response = await _dio.get(
         url,
-        queryParameters: {'category': category},
+        queryParameters: params,
       );
 
       _logger.d('Response status: ${response.statusCode}');
       _logger.d('Response data: ${response.data}');
 
       if (response.statusCode == 200 && response.data['retCode'] == 0) {
-        final List<dynamic> instrumentList = response.data['result']['list'];
-        final result = instrumentList
+        final result = response.data['result'];
+        final List<dynamic> instrumentList = result['list'];
+        final instruments = instrumentList
             .map((json) => InstrumentInfo(
                   symbol: json['symbol'],
                   baseCurrency: json['baseCoin'],
                   quoteCurrency: json['quoteCoin'],
                 ))
             .toList();
-        _logger.i('Successfully fetched and parsed ${result.length} instruments.');
-        return result;
+        _logger.i('Successfully fetched and parsed ${instruments.length} instruments.');
+        return ApiResponse<InstrumentInfo>(
+          list: instruments,
+          nextPageCursor: result['nextPageCursor'],
+        );
       } else {
         _logger.e('Failed to load instrument info: ${response.data['retMsg']}');
         throw Exception(
