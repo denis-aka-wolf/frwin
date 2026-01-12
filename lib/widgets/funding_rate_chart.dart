@@ -110,12 +110,13 @@ class _FundingRateChartState extends State<FundingRateChart> {
   List<CartesianSeries<FundingRateData, DateTime>> _getSeries() {
     final data = _aggregateData(_filteredData);
     return <CartesianSeries<FundingRateData, DateTime>>[
-      LineSeries<FundingRateData, DateTime>(
+      ColumnSeries<FundingRateData, DateTime>(
         dataSource: data,
         xValueMapper: (FundingRateData rate, _) => rate.timestamp,
         yValueMapper: (FundingRateData rate, _) => rate.fundingRate * 100, // Convert to percentage
+        pointColorMapper: (FundingRateData rate, _) =>
+            rate.fundingRate >= 0 ? Colors.green : Colors.red,
         name: 'Funding Rate',
-        markerSettings: const MarkerSettings(isVisible: true, height: 4, width: 4),
         dataLabelSettings: const DataLabelSettings(isVisible: false),
         enableTooltip: true,
       ),
