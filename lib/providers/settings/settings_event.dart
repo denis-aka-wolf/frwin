@@ -27,3 +27,12 @@ class UpdateRefreshInterval extends SettingsEvent {
   @override
   List<Object> get props => [interval];
 }
+
+class UpdateCardHeight extends SettingsEvent {
+  final double height;
+
+  const UpdateCardHeight({required this.height});
+
+  @override
+  List<Object> get props => [height];
+}

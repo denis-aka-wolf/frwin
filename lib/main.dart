@@ -8,6 +8,7 @@ import 'package:frwin/providers/settings/settings_event.dart';
 import 'package:frwin/providers/settings/settings_state.dart';
 import 'package:frwin/screens/funding_rate_detail_screen.dart';
 import 'package:frwin/screens/main_screen.dart';
+import 'package:frwin/screens/settings_screen.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -39,6 +40,7 @@ class MyApp extends StatelessWidget {
             routes: {
               '/': (context) => const MainScreen(),
               '/details': (context) => const FundingRateDetailScreen(),
+              '/settings': (context) => const SettingsScreen(),
             },
           );
         },

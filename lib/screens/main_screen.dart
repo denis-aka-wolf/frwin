@@ -4,6 +4,7 @@ import 'package:frwin/providers/instrument/instrument_bloc.dart';
 import 'package:frwin/providers/instrument/instrument_event.dart';
 import 'package:frwin/providers/instrument/instrument_state.dart';
 import 'package:frwin/widgets/error_display_widget.dart';
+import 'package:frwin/widgets/instrument_data_card.dart';
 import 'package:frwin/widgets/loading_widget.dart';
 
 class MainScreen extends StatefulWidget {
@@ -30,7 +31,7 @@ class _MainScreenState extends State<MainScreen> {
           IconButton(
             icon: const Icon(Icons.settings),
             onPressed: () {
-              // TODO: Navigate to settings screen
+              Navigator.pushNamed(context, '/settings');
             },
           ),
         ],
@@ -44,13 +45,7 @@ class _MainScreenState extends State<MainScreen> {
               itemCount: state.instruments.length,
               itemBuilder: (context, index) {
                 final instrument = state.instruments[index];
-                return ListTile(
-                  title: Text(instrument.symbol),
-                  onTap: () {
-                    Navigator.pushNamed(context, '/details',
-                        arguments: instrument);
-                  },
-                );
+                return InstrumentDataCard(instrument: instrument);
               },
             );
           } else if (state is InstrumentError) {
