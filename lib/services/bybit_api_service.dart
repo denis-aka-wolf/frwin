@@ -44,11 +44,7 @@ class BybitApiService {
         final result = response.data['result'];
         final List<dynamic> instrumentList = result['list'];
         final instruments = instrumentList
-            .map((json) => InstrumentInfo(
-                  symbol: json['symbol'],
-                  baseCurrency: json['baseCoin'],
-                  quoteCurrency: json['quoteCoin'],
-                ))
+            .map((json) => InstrumentInfo.fromJson(json))
             .toList();
         _logger.i('Successfully fetched and parsed ${instruments.length} instruments.');
         return ApiResponse<InstrumentInfo>(

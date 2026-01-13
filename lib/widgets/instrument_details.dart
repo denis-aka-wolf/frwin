@@ -12,8 +12,14 @@ class InstrumentDetails extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text('Symbol: ${instrument.symbol}'),
-        Text('Base: ${instrument.baseCurrency}'),
-        Text('Quote: ${instrument.quoteCurrency}'),
+        Text('Status: ${instrument.status}'),
+        Text('Base Coin: ${instrument.baseCoin}'),
+        Text('Quote Coin: ${instrument.quoteCoin}'),
+        Text('Settle Coin: ${instrument.settleCoin}'),
+        Text('Funding Interval: ${instrument.fundingInterval}'),
+        Text('Copy Trading: ${instrument.copyTrading}'),
+        Text('Upper Funding Rate: ${instrument.upperFundingRate}'),
+        Text('Lower Funding Rate: ${instrument.lowerFundingRate}'),
       ],
     );
   }
