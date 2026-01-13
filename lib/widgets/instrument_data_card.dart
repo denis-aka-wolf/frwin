@@ -41,7 +41,7 @@ class InstrumentDataCard extends StatelessWidget {
                         builder: (context, state) {
                       if (state is FundingRateLoading &&
                           state.fundingRates.isEmpty) {
-                      return const LoadingWidget();
+                        return const LoadingWidget();
                       } else if (state.fundingRates.isNotEmpty) {
                         return FundingRateChart(
                             fundingRateHistory: state.fundingRates);
