@@ -94,7 +94,8 @@ class _FundingRateDetailScreenState extends State<FundingRateDetailScreen> {
                   Text(
                       'Last funding rate: ${state.fundingRates.first.fundingRate}'),
                   if (state is FundingRateError)
-                    Text('Error: ${state.message}', style: const TextStyle(color: Colors.red)),
+                    Text('Error: ${state.message}',
+                        style: const TextStyle(color: Colors.red)),
                   Expanded(
                     child: FundingRateChart(fundingRateHistory: state.fundingRates),
                   ),

@@ -82,14 +82,16 @@ class BybitApiService {
 
       if (response.statusCode == 200 && response.data['retCode'] == 0) {
         final List<dynamic> historyList = response.data['result']['list'];
-        final result = historyList
-            .map((json) => FundingRateData(
-                  symbol: json['symbol'],
-                  fundingRate: double.parse(json['fundingRate']),
-                  timestamp: DateTime.fromMillisecondsSinceEpoch(
-                      int.parse(json['fundingRateTimestamp'])),
-                ))
-            .toList();
+        final result = historyList.map((json) {
+          final timestamp =
+              int.parse(json['fundingRateTimestamp']);
+
+          return FundingRateData(
+            symbol: json['symbol'],
+            fundingRate: double.parse(json['fundingRate']),
+            timestamp: DateTime.fromMillisecondsSinceEpoch(timestamp),
+          );
+        }).toList();
         _logger.i(
             'Successfully fetched and parsed ${result.length} funding rate data points.');
         return result;
@@ -104,6 +106,8 @@ class BybitApiService {
       throw Exception('Failed to load funding rate history: $e');
     }
   }
+
+
 
   // Placeholder for a method that might require authentication
   Future<void> getAccountInfo() async {

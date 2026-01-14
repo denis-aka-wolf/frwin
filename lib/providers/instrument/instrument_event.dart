@@ -24,3 +24,15 @@ class FetchMoreInstruments extends InstrumentEvent {
   @override
   List<Object> get props => [category];
 }
+
+class FilterInstruments extends InstrumentEvent {
+  final String? symbol;
+  final int? fundingInterval;
+
+  const FilterInstruments({this.symbol, this.fundingInterval});
+
+  @override
+  List<Object> get props => [symbol ?? '', fundingInterval ?? 0];
+}
+
+class ResetFilter extends InstrumentEvent {}

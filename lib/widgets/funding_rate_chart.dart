@@ -16,6 +16,8 @@ class FundingRateChart extends StatefulWidget {
 
 class _FundingRateChartState extends State<FundingRateChart> {
   TimeRange _selectedTimeRange = TimeRange.sevenDays;
+  bool _showVolume = true;
+  bool _showPrice = true;
   late ZoomPanBehavior _zoomPanBehavior;
   late TrackballBehavior _trackballBehavior;
 
@@ -76,6 +78,7 @@ class _FundingRateChartState extends State<FundingRateChart> {
               majorGridLines: const MajorGridLines(width: 0),
             ),
             primaryYAxis: NumericAxis(
+              name: 'fundingRate',
               labelFormat: '{value}%',
               axisLine: const AxisLine(width: 0),
               majorTickLines: const MajorTickLines(size: 0),
@@ -107,20 +110,25 @@ class _FundingRateChartState extends State<FundingRateChart> {
     );
   }
 
+
   List<CartesianSeries<FundingRateData, DateTime>> _getSeries() {
     final data = _aggregateData(_filteredData);
-    return <CartesianSeries<FundingRateData, DateTime>>[
+    final List<CartesianSeries<FundingRateData, DateTime>> series = [
       ColumnSeries<FundingRateData, DateTime>(
         dataSource: data,
         xValueMapper: (FundingRateData rate, _) => rate.timestamp,
-        yValueMapper: (FundingRateData rate, _) => rate.fundingRate * 100, // Convert to percentage
+        yValueMapper: (FundingRateData rate, _) => rate.fundingRate * 100,
         pointColorMapper: (FundingRateData rate, _) =>
             rate.fundingRate >= 0 ? Colors.green : Colors.red,
         name: 'Funding Rate',
+        yAxisName: 'fundingRate',
         dataLabelSettings: const DataLabelSettings(isVisible: false),
         enableTooltip: true,
       ),
     ];
+
+
+    return series;
   }
 
   List<FundingRateData> _aggregateData(List<FundingRateData> data) {
@@ -136,7 +144,9 @@ class _FundingRateChartState extends State<FundingRateChart> {
       final List<FundingRateData> chunk = data.sublist(i, end);
       
       if (chunk.isNotEmpty) {
-        final double avgRate = chunk.map((d) => d.fundingRate).reduce((a, b) => a + b) / chunk.length;
+        final double avgRate =
+            chunk.map((d) => d.fundingRate).reduce((a, b) => a + b) /
+                chunk.length;
         final DateTime midTimestamp = chunk[chunk.length ~/ 2].timestamp;
         final String symbol = chunk.first.symbol;
 
