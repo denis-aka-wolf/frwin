@@ -16,6 +16,13 @@ class MainScreen extends StatefulWidget {
 
 class _MainScreenState extends State<MainScreen> {
   final _scrollController = ScrollController();
+  bool _useFixedLimits = true; // Режим с фиксацией по умолчанию
+
+  void toggleFixedLimits() {
+    setState(() {
+      _useFixedLimits = !_useFixedLimits;
+    });
+  }
 
   @override
   void initState() {
@@ -61,7 +68,15 @@ class _MainScreenState extends State<MainScreen> {
         children: [
           Padding(
             padding: const EdgeInsets.all(8.0),
-            child: _buildFilterControls(context),
+            child: _buildFilterControls(
+              context: context,
+              useFixedLimits: _useFixedLimits,
+              onUseFixedLimitsChanged: (bool value) {
+                setState(() {
+                  _useFixedLimits = value;
+                });
+              },
+            ),
           ),
           Expanded(
             child: BlocBuilder<InstrumentBloc, InstrumentState>(
@@ -79,7 +94,10 @@ class _MainScreenState extends State<MainScreen> {
                         return const LoadingWidget();
                       }
                       final instrument = state.filteredInstruments[index];
-                      return InstrumentDataCard(instrument: instrument);
+                      return InstrumentDataCard(
+                        instrument: instrument,
+                        useFixedLimits: _useFixedLimits,
+                      );
                     },
                   );
                 } else if (state is InstrumentError) {
@@ -102,7 +120,11 @@ class _MainScreenState extends State<MainScreen> {
   }
 }
 
-  Widget _buildFilterControls(BuildContext context) {
+  Widget _buildFilterControls({
+    required BuildContext context,
+    required bool useFixedLimits,
+    required void Function(bool) onUseFixedLimitsChanged,
+  }) {
     final state = context.watch<InstrumentBloc>().state;
     String? symbolFilter;
     int? fundingIntervalFilter;
@@ -112,38 +134,48 @@ class _MainScreenState extends State<MainScreen> {
       fundingIntervalFilter = state.fundingIntervalFilter;
     }
 
-    return Row(
+    return Column(
+      mainAxisSize: MainAxisSize.min,
       children: [
-        Expanded(
-          child: TextField(
-            decoration: const InputDecoration(
-              labelText: 'Filter by Symbol',
-              border: OutlineInputBorder(),
+        Row(
+          children: [
+            Expanded(
+              child: TextField(
+                decoration: const InputDecoration(
+                  labelText: 'Filter by Symbol',
+                  border: OutlineInputBorder(),
+                ),
+                onChanged: (value) {
+                  context.read<InstrumentBloc>().add(FilterInstruments(symbol: value));
+                },
+              ),
             ),
-            onChanged: (value) {
-              context.read<InstrumentBloc>().add(FilterInstruments(symbol: value));
-            },
-          ),
-        ),
-        const SizedBox(width: 8),
-        DropdownButton<int>(
-          value: fundingIntervalFilter,
-          hint: const Text('Funding Interval'),
-          items: const [
-            DropdownMenuItem(value: 60, child: Text('1h')),
-            DropdownMenuItem(value: 240, child: Text('4h')),
-            DropdownMenuItem(value: 480, child: Text('8h')),
+            const SizedBox(width: 8),
+            DropdownButton<int>(
+              value: fundingIntervalFilter,
+              hint: const Text('Funding Interval'),
+              items: const [
+                DropdownMenuItem(value: 60, child: Text('1h')),
+                DropdownMenuItem(value: 240, child: Text('4h')),
+                DropdownMenuItem(value: 480, child: Text('8h')),
+              ],
+              onChanged: (value) {
+                context.read<InstrumentBloc>().add(FilterInstruments(fundingInterval: value));
+              },
+            ),
+            const SizedBox(width: 8),
+            ElevatedButton(
+              onPressed: () {
+                context.read<InstrumentBloc>().add(ResetFilter());
+              },
+              child: const Text('Сбросить'),
+            ),
           ],
-          onChanged: (value) {
-            context.read<InstrumentBloc>().add(FilterInstruments(fundingInterval: value));
-          },
         ),
-        const SizedBox(width: 8),
-        ElevatedButton(
-          onPressed: () {
-            context.read<InstrumentBloc>().add(ResetFilter());
-          },
-          child: const Text('Сбросить'),
+        SwitchListTile(
+          title: const Text('Use fixed limits'),
+          value: useFixedLimits,
+          onChanged: onUseFixedLimitsChanged,
         ),
       ],
     );

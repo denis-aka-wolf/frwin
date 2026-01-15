@@ -14,7 +14,13 @@ import 'package:frwin/app/core/di/di_container.dart';
 class InstrumentDataCard extends StatelessWidget {
   final InstrumentInfo instrument;
 
-  const InstrumentDataCard({super.key, required this.instrument});
+  final bool useFixedLimits;
+
+  const InstrumentDataCard({
+    super.key,
+    required this.instrument,
+    this.useFixedLimits = false, // По умолчанию включено
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -50,7 +56,9 @@ class InstrumentDataCard extends StatelessWidget {
                               return const LoadingWidget();
                             } else if (state.fundingRates.isNotEmpty) {
                               return FundingRateChart(
-                                  fundingRateHistory: state.fundingRates);
+                                  fundingRateHistory: state.fundingRates,
+                                  instrument: instrument,
+                                  useFixedLimits: useFixedLimits);
                             } else if (state is FundingRateError) {
                               return Center(
                                   child: Text('Error: ${state.message}'));

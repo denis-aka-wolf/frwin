@@ -1,14 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 import 'package:frwin/models/funding_rate_data.dart';
+import 'package:frwin/models/instrument_info.dart';
 import 'package:intl/intl.dart';
+import 'dart:math';
 
 enum TimeRange { oneDay, sevenDays, oneMonth, threeMonths, all }
 
 class FundingRateChart extends StatefulWidget {
   final List<FundingRateData> fundingRateHistory;
+  final InstrumentInfo instrument;
+  final bool useFixedLimits;
 
-  const FundingRateChart({super.key, required this.fundingRateHistory});
+  const FundingRateChart({
+    super.key,
+    required this.fundingRateHistory,
+    required this.instrument,
+    this.useFixedLimits = false, // По умолчанию выключено
+  });
 
   @override
   State<FundingRateChart> createState() => _FundingRateChartState();
@@ -79,9 +88,10 @@ class _FundingRateChartState extends State<FundingRateChart> {
             ),
             primaryYAxis: NumericAxis(
               name: 'fundingRate',
-              labelFormat: '{value}%',
               axisLine: const AxisLine(width: 0),
               majorTickLines: const MajorTickLines(size: 0),
+              maximum: widget.useFixedLimits ? double.tryParse(widget.instrument.upperFundingRate) : null,
+              minimum: widget.useFixedLimits ? double.tryParse(widget.instrument.lowerFundingRate) : null,
             ),
             series: _getSeries(),
             zoomPanBehavior: _zoomPanBehavior,
@@ -117,7 +127,7 @@ class _FundingRateChartState extends State<FundingRateChart> {
       ColumnSeries<FundingRateData, DateTime>(
         dataSource: data,
         xValueMapper: (FundingRateData rate, _) => rate.timestamp,
-        yValueMapper: (FundingRateData rate, _) => rate.fundingRate * 100,
+        yValueMapper: (FundingRateData rate, _) => rate.fundingRate,
         pointColorMapper: (FundingRateData rate, _) =>
             rate.fundingRate >= 0 ? Colors.green : Colors.red,
         name: 'Funding Rate',
@@ -126,7 +136,6 @@ class _FundingRateChartState extends State<FundingRateChart> {
         enableTooltip: true,
       ),
     ];
-
 
     return series;
   }

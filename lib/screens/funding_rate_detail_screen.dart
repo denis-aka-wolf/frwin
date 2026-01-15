@@ -97,7 +97,9 @@ class _FundingRateDetailScreenState extends State<FundingRateDetailScreen> {
                     Text('Error: ${state.message}',
                         style: const TextStyle(color: Colors.red)),
                   Expanded(
-                    child: FundingRateChart(fundingRateHistory: state.fundingRates),
+                    child: FundingRateChart(
+                        fundingRateHistory: state.fundingRates,
+                        instrument: instrument),
                   ),
                 ],
               ),
